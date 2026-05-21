@@ -28,13 +28,14 @@ function KidLoginPage() {
 
   const submitCode = async (e: FormEvent) => {
     e.preventDefault();
-    if (code.length !== 6) return;
+    const normalizedCode = code.trim().toUpperCase();
+    if (normalizedCode.length !== 6) return;
     setLoading(true);
     setError("");
     const { data: fam } = await supabase
       .from("families")
       .select("id, family_code, family_name")
-      .eq("family_code", code.toUpperCase())
+      .ilike("family_code", normalizedCode)
       .maybeSingle();
     if (!fam) {
       setLoading(false);

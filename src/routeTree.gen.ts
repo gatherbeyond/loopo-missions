@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as NewMissionRouteImport } from './routes/new-mission'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as KidLoginRouteImport } from './routes/kid-login'
 import { Route as KidCreatedRouteImport } from './routes/kid-created'
+import { Route as KidRouteImport } from './routes/kid'
 import { Route as FamilyNameRouteImport } from './routes/family-name'
 import { Route as FamilyCodeRouteImport } from './routes/family-code'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -34,9 +36,19 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KidLoginRoute = KidLoginRouteImport.update({
+  id: '/kid-login',
+  path: '/kid-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KidCreatedRoute = KidCreatedRouteImport.update({
   id: '/kid-created',
   path: '/kid-created',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KidRoute = KidRouteImport.update({
+  id: '/kid',
+  path: '/kid',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FamilyNameRoute = FamilyNameRouteImport.update({
@@ -71,7 +83,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/family-code': typeof FamilyCodeRoute
   '/family-name': typeof FamilyNameRoute
+  '/kid': typeof KidRoute
   '/kid-created': typeof KidCreatedRoute
+  '/kid-login': typeof KidLoginRoute
   '/login': typeof LoginRoute
   '/new-mission': typeof NewMissionRoute
   '/signup': typeof SignupRoute
@@ -82,7 +96,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/family-code': typeof FamilyCodeRoute
   '/family-name': typeof FamilyNameRoute
+  '/kid': typeof KidRoute
   '/kid-created': typeof KidCreatedRoute
+  '/kid-login': typeof KidLoginRoute
   '/login': typeof LoginRoute
   '/new-mission': typeof NewMissionRoute
   '/signup': typeof SignupRoute
@@ -94,7 +110,9 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/family-code': typeof FamilyCodeRoute
   '/family-name': typeof FamilyNameRoute
+  '/kid': typeof KidRoute
   '/kid-created': typeof KidCreatedRoute
+  '/kid-login': typeof KidLoginRoute
   '/login': typeof LoginRoute
   '/new-mission': typeof NewMissionRoute
   '/signup': typeof SignupRoute
@@ -107,7 +125,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/family-code'
     | '/family-name'
+    | '/kid'
     | '/kid-created'
+    | '/kid-login'
     | '/login'
     | '/new-mission'
     | '/signup'
@@ -118,7 +138,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/family-code'
     | '/family-name'
+    | '/kid'
     | '/kid-created'
+    | '/kid-login'
     | '/login'
     | '/new-mission'
     | '/signup'
@@ -129,7 +151,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/family-code'
     | '/family-name'
+    | '/kid'
     | '/kid-created'
+    | '/kid-login'
     | '/login'
     | '/new-mission'
     | '/signup'
@@ -141,7 +165,9 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   FamilyCodeRoute: typeof FamilyCodeRoute
   FamilyNameRoute: typeof FamilyNameRoute
+  KidRoute: typeof KidRoute
   KidCreatedRoute: typeof KidCreatedRoute
+  KidLoginRoute: typeof KidLoginRoute
   LoginRoute: typeof LoginRoute
   NewMissionRoute: typeof NewMissionRoute
   SignupRoute: typeof SignupRoute
@@ -170,11 +196,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kid-login': {
+      id: '/kid-login'
+      path: '/kid-login'
+      fullPath: '/kid-login'
+      preLoaderRoute: typeof KidLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/kid-created': {
       id: '/kid-created'
       path: '/kid-created'
       fullPath: '/kid-created'
       preLoaderRoute: typeof KidCreatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kid': {
+      id: '/kid'
+      path: '/kid'
+      fullPath: '/kid'
+      preLoaderRoute: typeof KidRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/family-name': {
@@ -221,7 +261,9 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   FamilyCodeRoute: FamilyCodeRoute,
   FamilyNameRoute: FamilyNameRoute,
+  KidRoute: KidRoute,
   KidCreatedRoute: KidCreatedRoute,
+  KidLoginRoute: KidLoginRoute,
   LoginRoute: LoginRoute,
   NewMissionRoute: NewMissionRoute,
   SignupRoute: SignupRoute,

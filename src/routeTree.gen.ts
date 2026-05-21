@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as NewMissionRouteImport } from './routes/new-mission'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as KidCreatedRouteImport } from './routes/kid-created'
 import { Route as FamilyNameRouteImport } from './routes/family-name'
@@ -21,6 +22,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewMissionRoute = NewMissionRouteImport.update({
+  id: '/new-mission',
+  path: '/new-mission',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/family-name': typeof FamilyNameRoute
   '/kid-created': typeof KidCreatedRoute
   '/login': typeof LoginRoute
+  '/new-mission': typeof NewMissionRoute
   '/signup': typeof SignupRoute
 }
 export interface FileRoutesByTo {
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/family-name': typeof FamilyNameRoute
   '/kid-created': typeof KidCreatedRoute
   '/login': typeof LoginRoute
+  '/new-mission': typeof NewMissionRoute
   '/signup': typeof SignupRoute
 }
 export interface FileRoutesById {
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/family-name': typeof FamilyNameRoute
   '/kid-created': typeof KidCreatedRoute
   '/login': typeof LoginRoute
+  '/new-mission': typeof NewMissionRoute
   '/signup': typeof SignupRoute
 }
 export interface FileRouteTypes {
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
     | '/family-name'
     | '/kid-created'
     | '/login'
+    | '/new-mission'
     | '/signup'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
     | '/family-name'
     | '/kid-created'
     | '/login'
+    | '/new-mission'
     | '/signup'
   id:
     | '__root__'
@@ -120,6 +131,7 @@ export interface FileRouteTypes {
     | '/family-name'
     | '/kid-created'
     | '/login'
+    | '/new-mission'
     | '/signup'
   fileRoutesById: FileRoutesById
 }
@@ -131,6 +143,7 @@ export interface RootRouteChildren {
   FamilyNameRoute: typeof FamilyNameRoute
   KidCreatedRoute: typeof KidCreatedRoute
   LoginRoute: typeof LoginRoute
+  NewMissionRoute: typeof NewMissionRoute
   SignupRoute: typeof SignupRoute
 }
 
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/new-mission': {
+      id: '/new-mission'
+      path: '/new-mission'
+      fullPath: '/new-mission'
+      preLoaderRoute: typeof NewMissionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -203,6 +223,7 @@ const rootRouteChildren: RootRouteChildren = {
   FamilyNameRoute: FamilyNameRoute,
   KidCreatedRoute: KidCreatedRoute,
   LoginRoute: LoginRoute,
+  NewMissionRoute: NewMissionRoute,
   SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport

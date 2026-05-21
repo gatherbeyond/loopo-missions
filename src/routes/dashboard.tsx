@@ -228,15 +228,14 @@ function DashboardPage() {
       {/* FAB */}
       <Link
         to="/new-mission"
-        className="fixed bottom-24 right-1/2 translate-x-[280px] sm:translate-x-[280px] z-20 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_28px_-8px_rgba(98,0,230,0.6)] hover:bg-primary-hover transition"
+        className="absolute bottom-24 right-5 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_28px_-8px_rgba(98,0,230,0.6)] hover:bg-primary-hover transition"
         aria-label="Add mission"
-        style={{ maxWidth: "100vw" }}
       >
         <Plus className="h-7 w-7" />
       </Link>
 
       {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-10 border-t border-border bg-background">
+      <nav className="sticky bottom-0 z-10 border-t border-border bg-background">
         <div className="mx-auto flex max-w-[600px] items-center justify-around py-2">
           <TabButton icon={LayoutDashboard} label="Dashboard" active />
           <TabButton icon={ListChecks} label="Missions" />

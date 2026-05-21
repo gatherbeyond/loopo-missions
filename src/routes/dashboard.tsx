@@ -104,7 +104,6 @@ function DashboardPage() {
   };
 
   const approveRedemption = async (r: Redemption) => {
-    const kid = kidById(r.kid_id);
     const [{ error: rpcErr }, { error: upErr }] = await Promise.all([
       supabase.rpc("increment_kid_credits", { kid_id: r.kid_id, amount: -r.cost_credits }),
       supabase.from("redemptions").update({ status: "approved" }).eq("id", r.id),

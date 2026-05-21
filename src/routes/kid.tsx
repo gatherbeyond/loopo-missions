@@ -200,6 +200,9 @@ function KidApp() {
         {tab === "missions" && (
           <MissionsTab loading={loading} tasks={tasks} onStart={start} onSubmit={submit} />
         )}
+        {tab === "my-rewards" && (
+          <MyRewardsTab loading={loading} redemptions={redemptions} />
+        )}
         {tab === "marketplace" && (
           <MarketplaceTab
             loading={loading}
@@ -220,8 +223,14 @@ function KidApp() {
             onClick={() => setTab("missions")}
           />
           <TabBtn
+            icon={Gift}
+            label="My Rewards"
+            active={tab === "my-rewards"}
+            onClick={() => setTab("my-rewards")}
+          />
+          <TabBtn
             icon={ShoppingBag}
-            label="Marketplace"
+            label="Rewards Shop"
             active={tab === "marketplace"}
             onClick={() => setTab("marketplace")}
           />

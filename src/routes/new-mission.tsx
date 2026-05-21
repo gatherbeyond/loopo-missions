@@ -18,7 +18,6 @@ function NewMissionPage() {
   const [description, setDescription] = useState("");
   const [credits, setCredits] = useState(100);
   const [kidId, setKidId] = useState("");
-  const [photoRequired, setPhotoRequired] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

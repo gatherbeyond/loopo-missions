@@ -98,7 +98,7 @@ function DashboardPage() {
   const initial = (parentName[0] || "?").toUpperCase();
 
   return (
-    <main className="min-h-screen pb-28">
+    <main className="relative min-h-screen pb-4 flex flex-col">
       {/* Top bar */}
       <header className="sticky top-0 z-10 bg-background/90 backdrop-blur border-b border-border">
         <div className="mx-auto flex max-w-[600px] items-center justify-between px-5 py-3">

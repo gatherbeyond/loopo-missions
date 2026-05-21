@@ -134,7 +134,7 @@ function KidApp() {
   if (!session) return null;
 
   return (
-    <main className="min-h-screen pb-24 bg-background">
+    <main className="relative min-h-screen pb-4 bg-background flex flex-col">
       {/* Header */}
       <header
         className="px-5 pt-6 pb-8 text-white rounded-b-[2rem]"

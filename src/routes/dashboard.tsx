@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
-import { LogOut, LayoutDashboard, ListChecks, Plus, Check, X } from "lucide-react";
+import { LogOut, LayoutDashboard, ListChecks, Plus, Check, X, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { supabase } from "@/lib/supabase";
@@ -21,6 +21,13 @@ type Task = {
   credits_reward: number;
   status: string;
 };
+type Redemption = {
+  id: string;
+  kid_id: string;
+  product_name: string;
+  cost_credits: number;
+  status: string;
+};
 
 function DashboardPage() {
   const navigate = useNavigate();
@@ -29,6 +36,7 @@ function DashboardPage() {
   const [kids, setKids] = useState<Kid[]>([]);
   const [pending, setPending] = useState<Task[]>([]);
   const [active, setActive] = useState<Task[]>([]);
+  const [redemptions, setRedemptions] = useState<Redemption[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
@@ -47,17 +55,22 @@ function DashboardPage() {
     if (!fam) { setLoading(false); return; }
     setFamily(fam);
 
-    const [kidsRes, tasksRes] = await Promise.all([
+    const [kidsRes, tasksRes, redRes] = await Promise.all([
       supabase.from("kids").select("id, name, avatar").eq("family_id", fam.id),
       supabase.from("tasks")
         .select("id, kid_id, title, description, credits_reward, status")
         .eq("family_id", fam.id)
         .in("status", ["pending", "not_started", "in_progress"]),
+      supabase.from("redemptions")
+        .select("id, kid_id, product_name, cost_credits, status")
+        .eq("family_id", fam.id)
+        .eq("status", "pending"),
     ]);
     setKids(kidsRes.data || []);
     const all = (tasksRes.data || []) as Task[];
     setPending(all.filter((t) => t.status === "pending"));
     setActive(all.filter((t) => t.status === "not_started" || t.status === "in_progress"));
+    setRedemptions((redRes.data as Redemption[]) || []);
     setLoading(false);
   }, [navigate]);
 
@@ -88,6 +101,23 @@ function DashboardPage() {
     if (error) return toast.error(error.message);
     toast("Mission denied");
     setPending((p) => p.filter((t) => t.id !== task.id));
+  };
+
+  const approveRedemption = async (r: Redemption) => {
+    const [{ error: rpcErr }, { error: upErr }] = await Promise.all([
+      supabase.rpc("increment_kid_credits", { kid_id: r.kid_id, amount: -r.cost_credits }),
+      supabase.from("redemptions").update({ status: "approved" }).eq("id", r.id),
+    ]);
+    if (rpcErr || upErr) return toast.error(rpcErr?.message || upErr?.message || "Approve failed");
+    toast.success("✅ Redemption approved!");
+    setRedemptions((prev) => prev.filter((x) => x.id !== r.id));
+  };
+
+  const denyRedemption = async (r: Redemption) => {
+    const { error } = await supabase.from("redemptions").update({ status: "denied" }).eq("id", r.id);
+    if (error) return toast.error(error.message);
+    toast("Redemption denied");
+    setRedemptions((prev) => prev.filter((x) => x.id !== r.id));
   };
 
   const signOut = async () => {
@@ -181,6 +211,56 @@ function DashboardPage() {
                       </button>
                       <button
                         onClick={() => deny(t)}
+                        className="flex-1 inline-flex items-center justify-center gap-1 rounded-full border-2 border-destructive px-4 py-2.5 font-display text-destructive hover:bg-destructive/5 transition"
+                      >
+                        <X className="h-4 w-4" /> Deny
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* Pending Redemptions */}
+        <section className="mt-10">
+          <h2 className="font-display text-xl flex items-center gap-2">
+            <ShoppingBag className="h-5 w-5 text-primary" /> Pending Redemptions
+          </h2>
+          {loading ? (
+            <div className="mt-3 h-24 rounded-2xl bg-tint animate-pulse" />
+          ) : redemptions.length === 0 ? (
+            <p className="mt-3 text-sm text-muted-foreground">
+              No pending redemptions.
+            </p>
+          ) : (
+            <div className="mt-3 flex flex-col gap-3">
+              {redemptions.map((r) => {
+                const kid = kidById(r.kid_id);
+                return (
+                  <div key={r.id} className="rounded-2xl bg-card border border-border p-4 shadow-[0_2px_12px_-6px_rgba(0,0,0,0.06)]">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-tint text-2xl">
+                        {kid?.avatar || "🙂"}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-display text-base">{kid?.name || "Kid"}</p>
+                        <p className="text-sm text-muted-foreground truncate">{r.product_name}</p>
+                      </div>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-gold/90 px-3 py-1 font-display text-sm text-gold-foreground">
+                        🪙 {r.cost_credits}
+                      </span>
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        onClick={() => approveRedemption(r)}
+                        className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-success px-4 py-2.5 font-display text-white hover:opacity-90 transition"
+                      >
+                        <Check className="h-4 w-4" /> Approve
+                      </button>
+                      <button
+                        onClick={() => denyRedemption(r)}
                         className="flex-1 inline-flex items-center justify-center gap-1 rounded-full border-2 border-destructive px-4 py-2.5 font-display text-destructive hover:bg-destructive/5 transition"
                       >
                         <X className="h-4 w-4" /> Deny

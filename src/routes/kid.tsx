@@ -48,7 +48,7 @@ function KidApp() {
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async (s: KidSession) => {
-    const [kidRes, tasksRes, prodRes] = await Promise.all([
+    const [kidRes, tasksRes, prodRes, redRes] = await Promise.all([
       supabase.from("kids").select("credits_balance").eq("id", s.kidId).maybeSingle(),
       supabase
         .from("tasks")
@@ -56,6 +56,11 @@ function KidApp() {
         .eq("kid_id", s.kidId)
         .in("status", ["not_started", "in_progress"]),
       supabase.from("products").select("id, name, cost_credits, image_url").eq("available", true),
+      supabase
+        .from("redemptions")
+        .select("id, product_name, cost_credits, status, created_at")
+        .eq("kid_id", s.kidId)
+        .order("created_at", { ascending: false }),
     ]);
     console.log("[kid] load", {
       kidId: s.kidId,
@@ -65,10 +70,13 @@ function KidApp() {
       tasksErr: tasksRes.error,
       products: prodRes.data,
       prodErr: prodRes.error,
+      redemptions: redRes.data,
+      redErr: redRes.error,
     });
     setCredits((kidRes.data?.credits_balance as number | undefined) ?? 0);
     setTasks((tasksRes.data as Task[]) || []);
     setProducts((prodRes.data as Product[]) || []);
+    setRedemptions((redRes.data as Redemption[]) || []);
     setLoading(false);
   }, []);
 

@@ -1,6 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Target, Coins, Gift, ArrowRight } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/")({
   component: Landing,

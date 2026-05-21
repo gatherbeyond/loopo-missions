@@ -58,10 +58,12 @@ function KidApp() {
       supabase.from("products").select("id, name, cost_credits, image_url").eq("available", true),
       supabase
         .from("redemptions")
-        .select("id, product_name, cost_credits, status, created_at")
+        .select("*")
         .eq("kid_id", s.kidId)
-        .order("created_at", { ascending: false }),
+        .order("requested_at", { ascending: false }),
     ]);
+    console.log("[kid] load — kidSession.id:", s.kidId);
+    console.log("[kid] load — redemptions response:", redRes);
     console.log("[kid] load", {
       kidId: s.kidId,
       credits: kidRes.data?.credits_balance,

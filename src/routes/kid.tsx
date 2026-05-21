@@ -27,7 +27,15 @@ type Product = {
   available?: boolean;
 };
 
-type Tab = "missions" | "marketplace";
+type Redemption = {
+  id: string;
+  product_name: string;
+  cost_credits: number;
+  status: string;
+  created_at?: string;
+};
+
+type Tab = "missions" | "my-rewards" | "marketplace";
 
 function KidApp() {
   const navigate = useNavigate();
@@ -35,6 +43,7 @@ function KidApp() {
   const [credits, setCredits] = useState<number>(0);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [redemptions, setRedemptions] = useState<Redemption[]>([]);
   const [tab, setTab] = useState<Tab>("missions");
   const [loading, setLoading] = useState(true);
 

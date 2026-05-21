@@ -32,12 +32,13 @@ function KidLoginPage() {
     if (normalizedCode.length !== 6) return;
     setLoading(true);
     setError("");
-    const { data: fam } = await supabase
+    const { data: famList, error: famErr } = await supabase
       .from("families")
       .select("id, family_code, family_name")
-      .ilike("family_code", normalizedCode)
-      .maybeSingle();
-    if (!fam) {
+      .eq("family_code", normalizedCode);
+    console.log("[kid-login] family lookup", { normalizedCode, famList, famErr });
+    const fam = famList?.[0];
+    if (famErr || !fam) {
       setLoading(false);
       setError("Code not found — check with your parent");
       return;

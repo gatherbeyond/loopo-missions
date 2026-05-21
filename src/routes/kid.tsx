@@ -307,6 +307,60 @@ function MissionsTab({
   );
 }
 
+function MyRewardsTab({
+  loading,
+  redemptions,
+}: {
+  loading: boolean;
+  redemptions: Redemption[];
+}) {
+  const statusMap: Record<string, { label: string; cls: string }> = {
+    pending: { label: "Pending", cls: "bg-yellow-100 text-yellow-800" },
+    approved: { label: "Approved", cls: "bg-green-100 text-green-800" },
+    denied: { label: "Denied", cls: "bg-red-100 text-red-800" },
+  };
+  return (
+    <section>
+      <h2 className="font-display text-2xl">My Rewards 🎁</h2>
+      {loading ? (
+        <div className="mt-4 h-24 rounded-2xl bg-tint animate-pulse" />
+      ) : redemptions.length === 0 ? (
+        <div className="mt-6 flex flex-col items-center rounded-3xl bg-tint py-10 px-6 text-center">
+          <img src={loopoHi} alt="" className="h-28 w-auto" />
+          <p className="mt-4 text-muted-foreground">
+            No rewards yet — redeem something from the shop!
+          </p>
+        </div>
+      ) : (
+        <ul className="mt-4 flex flex-col gap-3">
+          {redemptions.map((r) => {
+            const s = statusMap[r.status] || { label: r.status, cls: "bg-muted text-muted-foreground" };
+            return (
+              <li
+                key={r.id}
+                className="rounded-2xl bg-card border border-border p-4 shadow-[0_2px_12px_-6px_rgba(0,0,0,0.06)]"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-display text-lg leading-tight">{r.product_name}</p>
+                    <p className="mt-1 font-bold text-gold-foreground/80">
+                      🪙 {r.cost_credits.toLocaleString()} credits
+                    </p>
+                  </div>
+                  <span className={`rounded-full px-3 py-1 text-xs font-bold shrink-0 ${s.cls}`}>
+                    {s.label}
+                  </span>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+
 function MarketplaceTab({
   loading,
   products,

@@ -44,7 +44,7 @@ function SignupPage() {
     setLoading(false);
     if (error) return toast.error(error.message);
     toast.success("Account created!");
-    navigate({ to: "/login" });
+    navigate({ to: "/family-name" });
   };
 
   return (

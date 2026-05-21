@@ -103,6 +103,24 @@ function DashboardPage() {
     setPending((p) => p.filter((t) => t.id !== task.id));
   };
 
+  const approveRedemption = async (r: Redemption) => {
+    const kid = kidById(r.kid_id);
+    const [{ error: rpcErr }, { error: upErr }] = await Promise.all([
+      supabase.rpc("increment_kid_credits", { kid_id: r.kid_id, amount: -r.cost_credits }),
+      supabase.from("redemptions").update({ status: "approved" }).eq("id", r.id),
+    ]);
+    if (rpcErr || upErr) return toast.error(rpcErr?.message || upErr?.message || "Approve failed");
+    toast.success("✅ Redemption approved!");
+    setRedemptions((prev) => prev.filter((x) => x.id !== r.id));
+  };
+
+  const denyRedemption = async (r: Redemption) => {
+    const { error } = await supabase.from("redemptions").update({ status: "denied" }).eq("id", r.id);
+    if (error) return toast.error(error.message);
+    toast("Redemption denied");
+    setRedemptions((prev) => prev.filter((x) => x.id !== r.id));
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
     navigate({ to: "/" });

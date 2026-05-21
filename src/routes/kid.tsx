@@ -62,6 +62,8 @@ function KidApp() {
         .eq("kid_id", s.kidId)
         .order("requested_at", { ascending: false }),
     ]);
+    console.log("[kid] load — kidSession.id:", s.kidId);
+    console.log("[kid] load — redemptions response:", redRes);
     console.log("[kid] load", {
       kidId: s.kidId,
       credits: kidRes.data?.credits_balance,

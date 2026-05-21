@@ -71,7 +71,11 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="min-h-screen lg:py-6 lg:bg-[radial-gradient(circle_at_top,#EDE4FF,#F5F3FF_60%,#FAFAFA)]">
+        <div className="mx-auto bg-background min-h-screen lg:min-h-[calc(100vh-3rem)] lg:max-w-[460px] lg:rounded-[2.5rem] lg:shadow-[0_30px_80px_-20px_rgba(98,0,230,0.35)] lg:overflow-hidden relative">
+          <Outlet />
+        </div>
+      </div>
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );

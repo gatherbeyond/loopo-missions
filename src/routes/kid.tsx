@@ -62,6 +62,28 @@ function KidApp() {
     }
     setSession(s);
     load(s);
+
+    // Realtime: listen for any task changes for this kid, refresh balance + missions
+    const channel = supabase
+      .channel(`kid-tasks-${s.kidId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "tasks", filter: `kid_id=eq.${s.kidId}` },
+        () => { load(s); },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "kids", filter: `id=eq.${s.kidId}` },
+        (payload) => {
+          const newBal = (payload.new as { credits_balance?: number })?.credits_balance;
+          if (typeof newBal === "number") setCredits(newBal);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [navigate, load]);
 
   const start = async (t: Task) => {
@@ -112,7 +134,7 @@ function KidApp() {
   if (!session) return null;
 
   return (
-    <main className="min-h-screen pb-24 bg-background">
+    <main className="relative min-h-screen pb-4 bg-background flex flex-col">
       {/* Header */}
       <header
         className="px-5 pt-6 pb-8 text-white rounded-b-[2rem]"
@@ -163,7 +185,7 @@ function KidApp() {
       </div>
 
       {/* Bottom tabs */}
-      <nav className="fixed bottom-0 inset-x-0 z-10 border-t border-border bg-background">
+      <nav className="sticky bottom-0 z-10 border-t border-border bg-background">
         <div className="mx-auto flex max-w-[600px] items-center justify-around py-2">
           <TabBtn
             icon={Target}

@@ -1,6 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Target, Coins, Gift, ArrowRight } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -36,6 +38,30 @@ function Feature({
 }
 
 function Landing() {
+  const navigate = useNavigate();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!active) return;
+      if (data.session) {
+        navigate({ to: "/dashboard" });
+      } else {
+        setChecking(false);
+      }
+    });
+    return () => { active = false; };
+  }, [navigate]);
+
+  if (checking) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <div className="h-10 w-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen flex justify-center px-5 py-8">
       <div className="w-full max-w-[430px] flex flex-col">

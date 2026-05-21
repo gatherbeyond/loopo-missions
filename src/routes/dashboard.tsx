@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
 import { LogOut, LayoutDashboard, ListChecks, Plus, Check, X } from "lucide-react";
 import { toast } from "sonner";
+import confetti from "canvas-confetti";
 import { supabase } from "@/lib/supabase";
 import { LoopoLogo } from "@/components/LoopoLogo";
 import { Mascot } from "@/components/Mascot";
@@ -71,6 +72,13 @@ function DashboardPage() {
       supabase.from("tasks").update({ status: "completed" }).eq("id", task.id),
     ]);
     if (rpcErr || upErr) return toast.error(rpcErr?.message || upErr?.message || "Approve failed");
+    confetti({
+      particleCount: 140,
+      spread: 90,
+      origin: { y: 0.4 },
+      colors: ["#6200E6", "#7C4DFF", "#FFD600", "#00C853"],
+    });
+    setTimeout(() => confetti({ particleCount: 60, spread: 120, origin: { y: 0.4 } }), 250);
     toast.success(`✅ ${task.credits_reward} credits awarded to ${kid?.name ?? "kid"}!`);
     setPending((p) => p.filter((t) => t.id !== task.id));
   };
@@ -90,7 +98,7 @@ function DashboardPage() {
   const initial = (parentName[0] || "?").toUpperCase();
 
   return (
-    <main className="min-h-screen pb-28">
+    <main className="relative min-h-screen pb-4 flex flex-col">
       {/* Top bar */}
       <header className="sticky top-0 z-10 bg-background/90 backdrop-blur border-b border-border">
         <div className="mx-auto flex max-w-[600px] items-center justify-between px-5 py-3">
@@ -116,6 +124,22 @@ function DashboardPage() {
       <div className="mx-auto max-w-[600px] px-5 pt-6">
         <h1 className="text-3xl">Hi {parentName}! 👋</h1>
 
+        {/* No kids yet */}
+        {!loading && kids.length === 0 && (
+          <div className="mt-6 rounded-3xl border-2 border-dashed border-primary/30 bg-tint p-6 text-center">
+            <p className="font-display text-lg">No kids added yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Add your first kid in Settings to start creating missions.
+            </p>
+            <Link
+              to="/add-kid"
+              className="mt-4 inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground px-5 py-2.5 font-display hover:bg-primary-hover transition"
+            >
+              + Add a kid
+            </Link>
+          </div>
+        )}
+
         {/* Pending approvals */}
         <section className="mt-8">
           <h2 className="font-display text-xl">Pending Approvals</h2>
@@ -125,8 +149,9 @@ function DashboardPage() {
           ) : pending.length === 0 ? (
             <div className="mt-4 flex flex-col items-center rounded-3xl bg-tint py-10 px-6 text-center">
               <Mascot size={110} />
-              <p className="mt-4 text-muted-foreground">
-                No approvals yet — missions will appear here
+              <p className="mt-4 font-display text-lg">All caught up! ✨</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                New missions will appear here for approval.
               </p>
             </div>
           ) : (
@@ -203,15 +228,14 @@ function DashboardPage() {
       {/* FAB */}
       <Link
         to="/new-mission"
-        className="fixed bottom-24 right-1/2 translate-x-[280px] sm:translate-x-[280px] z-20 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_28px_-8px_rgba(98,0,230,0.6)] hover:bg-primary-hover transition"
+        className="absolute bottom-24 right-5 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_28px_-8px_rgba(98,0,230,0.6)] hover:bg-primary-hover transition"
         aria-label="Add mission"
-        style={{ maxWidth: "100vw" }}
       >
         <Plus className="h-7 w-7" />
       </Link>
 
       {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-10 border-t border-border bg-background">
+      <nav className="sticky bottom-0 z-10 border-t border-border bg-background">
         <div className="mx-auto flex max-w-[600px] items-center justify-around py-2">
           <TabButton icon={LayoutDashboard} label="Dashboard" active />
           <TabButton icon={ListChecks} label="Missions" />

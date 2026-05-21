@@ -87,7 +87,7 @@ function Landing() {
         </p>
 
         <div className="mt-auto pt-12 pb-2 text-center text-sm text-muted-foreground">
-          Kid logging in? <a href="#" className="font-bold text-primary">Tap here</a>
+          Kid logging in? <Link to="/kid-login" className="font-bold text-primary">Tap here</Link>
         </div>
       </div>
     </main>

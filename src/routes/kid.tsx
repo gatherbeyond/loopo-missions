@@ -40,7 +40,7 @@ function KidApp() {
 
   const load = useCallback(async (s: KidSession) => {
     const [kidRes, tasksRes, prodRes] = await Promise.all([
-      supabase.from("kids").select("credits").eq("id", s.kidId).maybeSingle(),
+      supabase.from("kids").select("credits_balance").eq("id", s.kidId).maybeSingle(),
       supabase
         .from("tasks")
         .select("id, title, description, credits_reward, status")
@@ -48,7 +48,7 @@ function KidApp() {
         .in("status", ["not_started", "in_progress"]),
       supabase.from("products").select("id, name, cost_credits, image_url").eq("available", true),
     ]);
-    setCredits((kidRes.data?.credits as number | undefined) ?? 0);
+    setCredits((kidRes.data?.credits_balance as number | undefined) ?? 0);
     setTasks((tasksRes.data as Task[]) || []);
     setProducts((prodRes.data as Product[]) || []);
     setLoading(false);

@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { Target, ShoppingBag, LogOut } from "lucide-react";
+import { Target, ShoppingBag, LogOut, Gift } from "lucide-react";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { supabase } from "@/lib/supabase";
@@ -27,7 +27,15 @@ type Product = {
   available?: boolean;
 };
 
-type Tab = "missions" | "marketplace";
+type Redemption = {
+  id: string;
+  product_name: string;
+  cost_credits: number;
+  status: string;
+  created_at?: string;
+};
+
+type Tab = "missions" | "my-rewards" | "marketplace";
 
 function KidApp() {
   const navigate = useNavigate();
@@ -35,11 +43,12 @@ function KidApp() {
   const [credits, setCredits] = useState<number>(0);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [redemptions, setRedemptions] = useState<Redemption[]>([]);
   const [tab, setTab] = useState<Tab>("missions");
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async (s: KidSession) => {
-    const [kidRes, tasksRes, prodRes] = await Promise.all([
+    const [kidRes, tasksRes, prodRes, redRes] = await Promise.all([
       supabase.from("kids").select("credits_balance").eq("id", s.kidId).maybeSingle(),
       supabase
         .from("tasks")
@@ -47,6 +56,11 @@ function KidApp() {
         .eq("kid_id", s.kidId)
         .in("status", ["not_started", "in_progress"]),
       supabase.from("products").select("id, name, cost_credits, image_url").eq("available", true),
+      supabase
+        .from("redemptions")
+        .select("id, product_name, cost_credits, status, created_at")
+        .eq("kid_id", s.kidId)
+        .order("created_at", { ascending: false }),
     ]);
     console.log("[kid] load", {
       kidId: s.kidId,
@@ -56,10 +70,13 @@ function KidApp() {
       tasksErr: tasksRes.error,
       products: prodRes.data,
       prodErr: prodRes.error,
+      redemptions: redRes.data,
+      redErr: redRes.error,
     });
     setCredits((kidRes.data?.credits_balance as number | undefined) ?? 0);
     setTasks((tasksRes.data as Task[]) || []);
     setProducts((prodRes.data as Product[]) || []);
+    setRedemptions((redRes.data as Redemption[]) || []);
     setLoading(false);
   }, []);
 
@@ -183,6 +200,9 @@ function KidApp() {
         {tab === "missions" && (
           <MissionsTab loading={loading} tasks={tasks} onStart={start} onSubmit={submit} />
         )}
+        {tab === "my-rewards" && (
+          <MyRewardsTab loading={loading} redemptions={redemptions} />
+        )}
         {tab === "marketplace" && (
           <MarketplaceTab
             loading={loading}
@@ -203,8 +223,14 @@ function KidApp() {
             onClick={() => setTab("missions")}
           />
           <TabBtn
+            icon={Gift}
+            label="My Rewards"
+            active={tab === "my-rewards"}
+            onClick={() => setTab("my-rewards")}
+          />
+          <TabBtn
             icon={ShoppingBag}
-            label="Marketplace"
+            label="Rewards Shop"
             active={tab === "marketplace"}
             onClick={() => setTab("marketplace")}
           />
@@ -280,6 +306,60 @@ function MissionsTab({
     </section>
   );
 }
+
+function MyRewardsTab({
+  loading,
+  redemptions,
+}: {
+  loading: boolean;
+  redemptions: Redemption[];
+}) {
+  const statusMap: Record<string, { label: string; cls: string }> = {
+    pending: { label: "Pending", cls: "bg-yellow-100 text-yellow-800" },
+    approved: { label: "Approved", cls: "bg-green-100 text-green-800" },
+    denied: { label: "Denied", cls: "bg-red-100 text-red-800" },
+  };
+  return (
+    <section>
+      <h2 className="font-display text-2xl">My Rewards 🎁</h2>
+      {loading ? (
+        <div className="mt-4 h-24 rounded-2xl bg-tint animate-pulse" />
+      ) : redemptions.length === 0 ? (
+        <div className="mt-6 flex flex-col items-center rounded-3xl bg-tint py-10 px-6 text-center">
+          <img src={loopoHi} alt="" className="h-28 w-auto" />
+          <p className="mt-4 text-muted-foreground">
+            No rewards yet — redeem something from the shop!
+          </p>
+        </div>
+      ) : (
+        <ul className="mt-4 flex flex-col gap-3">
+          {redemptions.map((r) => {
+            const s = statusMap[r.status] || { label: r.status, cls: "bg-muted text-muted-foreground" };
+            return (
+              <li
+                key={r.id}
+                className="rounded-2xl bg-card border border-border p-4 shadow-[0_2px_12px_-6px_rgba(0,0,0,0.06)]"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-display text-lg leading-tight">{r.product_name}</p>
+                    <p className="mt-1 font-bold text-gold-foreground/80">
+                      🪙 {r.cost_credits.toLocaleString()} credits
+                    </p>
+                  </div>
+                  <span className={`rounded-full px-3 py-1 text-xs font-bold shrink-0 ${s.cls}`}>
+                    {s.label}
+                  </span>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 
 function MarketplaceTab({
   loading,

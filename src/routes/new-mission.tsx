@@ -48,7 +48,6 @@ function NewMissionPage() {
       description: description.trim() || null,
       credits_reward: credits,
       status: "not_started",
-      photo_required: photoRequired,
     };
     const { error } = await supabase.from("tasks").insert(payload);
     setLoading(false);

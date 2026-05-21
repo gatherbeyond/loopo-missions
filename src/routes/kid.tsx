@@ -185,7 +185,7 @@ function KidApp() {
       </div>
 
       {/* Bottom tabs */}
-      <nav className="fixed bottom-0 inset-x-0 z-10 border-t border-border bg-background">
+      <nav className="sticky bottom-0 z-10 border-t border-border bg-background">
         <div className="mx-auto flex max-w-[600px] items-center justify-around py-2">
           <TabBtn
             icon={Target}

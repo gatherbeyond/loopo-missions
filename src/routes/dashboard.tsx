@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
-import { LogOut, LayoutDashboard, ListChecks, Plus, Check, X } from "lucide-react";
+import { LogOut, LayoutDashboard, ListChecks, Plus, Check, X, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { supabase } from "@/lib/supabase";

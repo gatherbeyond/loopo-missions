@@ -55,17 +55,22 @@ function DashboardPage() {
     if (!fam) { setLoading(false); return; }
     setFamily(fam);
 
-    const [kidsRes, tasksRes] = await Promise.all([
+    const [kidsRes, tasksRes, redRes] = await Promise.all([
       supabase.from("kids").select("id, name, avatar").eq("family_id", fam.id),
       supabase.from("tasks")
         .select("id, kid_id, title, description, credits_reward, status")
         .eq("family_id", fam.id)
         .in("status", ["pending", "not_started", "in_progress"]),
+      supabase.from("redemptions")
+        .select("id, kid_id, product_name, cost_credits, status")
+        .eq("family_id", fam.id)
+        .eq("status", "pending"),
     ]);
     setKids(kidsRes.data || []);
     const all = (tasksRes.data || []) as Task[];
     setPending(all.filter((t) => t.status === "pending"));
     setActive(all.filter((t) => t.status === "not_started" || t.status === "in_progress"));
+    setRedemptions((redRes.data as Redemption[]) || []);
     setLoading(false);
   }, [navigate]);
 

@@ -224,6 +224,56 @@ function DashboardPage() {
           )}
         </section>
 
+        {/* Pending Redemptions */}
+        <section className="mt-10">
+          <h2 className="font-display text-xl flex items-center gap-2">
+            <ShoppingBag className="h-5 w-5 text-primary" /> Pending Redemptions
+          </h2>
+          {loading ? (
+            <div className="mt-3 h-24 rounded-2xl bg-tint animate-pulse" />
+          ) : redemptions.length === 0 ? (
+            <p className="mt-3 text-sm text-muted-foreground">
+              No pending redemptions.
+            </p>
+          ) : (
+            <div className="mt-3 flex flex-col gap-3">
+              {redemptions.map((r) => {
+                const kid = kidById(r.kid_id);
+                return (
+                  <div key={r.id} className="rounded-2xl bg-card border border-border p-4 shadow-[0_2px_12px_-6px_rgba(0,0,0,0.06)]">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-tint text-2xl">
+                        {kid?.avatar || "🙂"}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-display text-base">{kid?.name || "Kid"}</p>
+                        <p className="text-sm text-muted-foreground truncate">{r.product_name}</p>
+                      </div>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-gold/90 px-3 py-1 font-display text-sm text-gold-foreground">
+                        🪙 {r.cost_credits}
+                      </span>
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        onClick={() => approveRedemption(r)}
+                        className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-success px-4 py-2.5 font-display text-white hover:opacity-90 transition"
+                      >
+                        <Check className="h-4 w-4" /> Approve
+                      </button>
+                      <button
+                        onClick={() => denyRedemption(r)}
+                        className="flex-1 inline-flex items-center justify-center gap-1 rounded-full border-2 border-destructive px-4 py-2.5 font-display text-destructive hover:bg-destructive/5 transition"
+                      >
+                        <X className="h-4 w-4" /> Deny
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
         {/* Active missions */}
         <section className="mt-10">
           <h2 className="font-display text-xl">Active Missions</h2>

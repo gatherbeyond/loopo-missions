@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Target, Coins, Gift, ArrowRight } from "lucide-react";
 import { Mascot } from "@/components/Mascot";
 import { supabase } from "@/lib/supabase";
@@ -39,28 +39,15 @@ function Feature({
 
 function Landing() {
   const navigate = useNavigate();
-  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
     let active = true;
     supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
-      if (data.session) {
-        navigate({ to: "/dashboard" });
-      } else {
-        setChecking(false);
-      }
-    });
+      if (data.session) navigate({ to: "/dashboard" });
+    }).catch(() => { /* ignore — show landing */ });
     return () => { active = false; };
   }, [navigate]);
-
-  if (checking) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <div className="h-10 w-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-      </main>
-    );
-  }
 
   return (
     <main className="min-h-screen flex justify-center px-5 py-8">

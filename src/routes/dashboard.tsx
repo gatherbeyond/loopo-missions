@@ -21,6 +21,13 @@ type Task = {
   credits_reward: number;
   status: string;
 };
+type Redemption = {
+  id: string;
+  kid_id: string;
+  product_name: string;
+  cost_credits: number;
+  status: string;
+};
 
 function DashboardPage() {
   const navigate = useNavigate();

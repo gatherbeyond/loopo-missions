@@ -62,6 +62,28 @@ function KidApp() {
     }
     setSession(s);
     load(s);
+
+    // Realtime: listen for any task changes for this kid, refresh balance + missions
+    const channel = supabase
+      .channel(`kid-tasks-${s.kidId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "tasks", filter: `kid_id=eq.${s.kidId}` },
+        () => { load(s); },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "kids", filter: `id=eq.${s.kidId}` },
+        (payload) => {
+          const newBal = (payload.new as { credits_balance?: number })?.credits_balance;
+          if (typeof newBal === "number") setCredits(newBal);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [navigate, load]);
 
   const start = async (t: Task) => {

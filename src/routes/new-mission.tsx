@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, Camera } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 
@@ -18,7 +18,6 @@ function NewMissionPage() {
   const [description, setDescription] = useState("");
   const [credits, setCredits] = useState(100);
   const [kidId, setKidId] = useState("");
-  const [photoRequired, setPhotoRequired] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -49,7 +48,6 @@ function NewMissionPage() {
       description: description.trim() || null,
       credits_reward: credits,
       status: "not_started",
-      photo_required: photoRequired,
     };
     const { error } = await supabase.from("tasks").insert(payload);
     setLoading(false);
@@ -128,20 +126,6 @@ function NewMissionPage() {
               ))}
             </select>
           </div>
-
-          <label className="flex items-center justify-between gap-3 rounded-2xl bg-tint px-4 py-3">
-            <span className="inline-flex items-center gap-2 font-display">
-              <Camera className="h-5 w-5 text-primary" /> Photo required?
-            </span>
-            <button
-              type="button"
-              onClick={() => setPhotoRequired((v) => !v)}
-              className={`relative h-7 w-12 rounded-full transition ${photoRequired ? "bg-primary" : "bg-muted-foreground/30"}`}
-              aria-pressed={photoRequired}
-            >
-              <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition ${photoRequired ? "left-[22px]" : "left-0.5"}`} />
-            </button>
-          </label>
 
           <button
             type="submit"

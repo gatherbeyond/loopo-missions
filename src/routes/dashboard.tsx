@@ -36,6 +36,7 @@ function DashboardPage() {
   const [kids, setKids] = useState<Kid[]>([]);
   const [pending, setPending] = useState<Task[]>([]);
   const [active, setActive] = useState<Task[]>([]);
+  const [redemptions, setRedemptions] = useState<Redemption[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {

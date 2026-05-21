@@ -48,6 +48,15 @@ function KidApp() {
         .in("status", ["not_started", "in_progress"]),
       supabase.from("products").select("id, name, cost_credits, image_url").eq("available", true),
     ]);
+    console.log("[kid] load", {
+      kidId: s.kidId,
+      credits: kidRes.data?.credits_balance,
+      kidErr: kidRes.error,
+      tasks: tasksRes.data,
+      tasksErr: tasksRes.error,
+      products: prodRes.data,
+      prodErr: prodRes.error,
+    });
     setCredits((kidRes.data?.credits_balance as number | undefined) ?? 0);
     setTasks((tasksRes.data as Task[]) || []);
     setProducts((prodRes.data as Product[]) || []);
